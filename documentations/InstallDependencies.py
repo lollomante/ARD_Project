@@ -4,3 +4,4 @@
 #pip install nbformat
 #pip install dash dash-bootstrap-components
 #pip install dash
+#pip install pandas matplotlib

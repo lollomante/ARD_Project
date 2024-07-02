@@ -243,16 +243,67 @@ def MultiBarChart(df, TimeInterval):
 
 def PieChart(df_acc, time_interval):
 
-    df = df_acc
+    
     if(time_interval != 'all'):
-        df = df_acc[df_acc['Start_Time'].dt.year == time_interval]
+
+        #bad solution:
+        if(time_interval=='2016'):
+            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2016)]
+        elif(time_interval=='2017'):
+            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2017)]
+        elif(time_interval=='2018'):
+            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2018)]
+        elif(time_interval=='2019'):
+            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2019)]
+        elif(time_interval=='2020'):
+            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2020)]
+        elif(time_interval=='2021'):
+            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2021)]
+        elif(time_interval=='2022'):
+            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2022)]   
+        #time_interval = 2016
+        #df_acc = df_acc[(df_acc['Start_Time'].dt.year == time_interval)]
     # Calculate the distribution of 'severity'
-    severity_counts = df['Severity'].value_counts().sort_index()
+    severity_counts = df_acc['Severity'].value_counts().sort_index()
 
     # Create a pie chart
     fig = px.pie(values=severity_counts, names=severity_counts.index, title="Distribution of Severity")
 
     return fig
 
+# number of accidents per 100,000 abitants
+def BestWorstAcc(df_acc, df_pop, time_interval, orderby, SampleRescalingFactor):
+    
+    # Group accident data by state and year
+    accidents_grouped = df_acc.groupby(['State', 'Year']).size().reset_index(name='Accident_Count')
+
+    # Reshape population data from wide to long format
+    population_long = pd.melt(df_pop, id_vars=['Year'], var_name='State', value_name='Population')
+
+    # Merge population data with accidents data
+    merged_data = pd.merge(accidents_grouped, population_long, how='inner', on=['State', 'Year'])
+
+    # Calculate accident rate per 100,000 population
+    merged_data['Accident_Rate_per_100k'] = (merged_data['Accident_Count'] / merged_data['Population']) * 100000 * SampleRescalingFactor
+
+    # Select data for a specific year
+    data_specific_year = merged_data[merged_data['Year'] == int(time_interval)]
+
+    if(orderby=='WorstToBest'):
+        # Sort the data by Accident_Rate_per_100k in descending order
+        data_specific_year = data_specific_year.sort_values(by='Accident_Rate_per_100k', ascending=False)
+    if(orderby=='BestToWorst'):
+        data_specific_year = data_specific_year.sort_values(by='Accident_Rate_per_100k', ascending=True)
+    
+    # Create the bar chart using Plotly
+    fig = px.bar(
+        data_specific_year,
+        x='State',
+        y='Accident_Rate_per_100k',
+        title=f'Accidents per 100,000 Residents by State in {time_interval}',
+        labels={'Accident_Rate_per_100k': 'Accidents per 100,000 Residents'},
+        text='Accident_Rate_per_100k'
+    )
+    return fig
 
 
