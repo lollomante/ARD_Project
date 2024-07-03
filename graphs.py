@@ -8,11 +8,13 @@ import dash_bootstrap_components as dbc
 from dash import Dash, Input, Output, html, dcc
 import plotly.express as px
 
+from constants import *
 
-def SingleBarChart(df, TimeInterval):
+
+def SingleBarChart(df, TimeInterval, Sampling_Factor):
 
     if (TimeInterval == 'Yearly'):
-        yearly_counts = df['Start_Time'].dt.year.value_counts().sort_index()
+        yearly_counts = (df['Start_Time'].dt.year.value_counts().sort_index())*Sampling_Factor
         fig = px.bar(
             x = yearly_counts.index, 
             y = yearly_counts.values,          
@@ -22,7 +24,7 @@ def SingleBarChart(df, TimeInterval):
         return fig
     
     if (TimeInterval == 'Monthly'):
-        monthly_counts = df['Start_Time'].dt.month.value_counts().sort_index()
+        monthly_counts = (df['Start_Time'].dt.month.value_counts().sort_index())*Sampling_Factor
         fig = px.bar(
             x = monthly_counts.index, 
             y = monthly_counts.values,          
@@ -32,7 +34,7 @@ def SingleBarChart(df, TimeInterval):
         return fig
    
     if (TimeInterval == 'Daily'):
-        daily_counts = df['Start_Time'].dt.dayofweek.value_counts().sort_index()
+        daily_counts = (df['Start_Time'].dt.dayofweek.value_counts().sort_index())*Sampling_Factor
         day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         fig = px.bar(
             x = [day_names[day] for day in daily_counts.index], 
@@ -43,7 +45,7 @@ def SingleBarChart(df, TimeInterval):
         return fig
     
     if (TimeInterval == 'Hourly'):
-        hourly_counts = df['Start_Time'].dt.hour.value_counts().sort_index()
+        hourly_counts = (df['Start_Time'].dt.hour.value_counts().sort_index())*Sampling_Factor
         fig = px.bar(
             x = hourly_counts.index, 
             y = hourly_counts.values,          
@@ -52,224 +54,126 @@ def SingleBarChart(df, TimeInterval):
         )
         return fig
 
-def MultiBarChart(df, TimeInterval):
-    #devide dataset on severity of the accident
-    Severity1 = df[df.Severity == 1]
-    Severity2 = df[df.Severity == 2]
-    Severity3 = df[df.Severity == 3]
-    Severity4 = df[df.Severity == 4]
-    
+def GrouBySeverity(df, TimeInterval, Severity):
     if (TimeInterval == 'Yearly'):
         categories = df['Start_Time'].dt.year.value_counts().sort_index().index
-
-        values1 = Severity1['Start_Time'].dt.year.value_counts().sort_index()
-        values2 = Severity2['Start_Time'].dt.year.value_counts().sort_index()
-        values3 = Severity3['Start_Time'].dt.year.value_counts().sort_index()
-        values4 = Severity4['Start_Time'].dt.year.value_counts().sort_index()
-
-
-        trace1 = go.Bar(
-            x=categories,
-            y=values1.values,
-            name='Series 1'
-        )
-        trace2 = go.Bar(
-            x=categories,
-            y=values2.values,
-            name='Series 2'
-        )
-        trace3 = go.Bar(
-            x=categories,
-            y=values3.values,
-            name='Series 3'
-        )
-        trace4 = go.Bar(
-            x=categories,
-            y=values4.values,
-            name='Series 4'
-        )
-
-        # Create the figure
-        fig = go.Figure(data=[trace1, trace2, trace3, trace4])
-
-        # Update layout for better visualization
-        fig.update_layout(
-            title='Multiple Bar Chart',
-            #xaxis=dict(title='Categories'),
-            #yaxis=dict(title='Values'),
-            barmode='group',  # This will group the bars side by side
-            bargap=0.15,      # Gap between bars of adjacent location coordinates
-            bargroupgap=0.1   # Gap between bars of the same location coordinate
-        )
-
-        return fig
+        values1 = Severity[0]['Start_Time'].dt.year.value_counts().sort_index()
+        values2 = Severity[1]['Start_Time'].dt.year.value_counts().sort_index()
+        values3 = Severity[2]['Start_Time'].dt.year.value_counts().sort_index()
+        values4 = Severity[3]['Start_Time'].dt.year.value_counts().sort_index()
+        return [categories,values1,values2,values3,values4]
     
     if (TimeInterval == 'Monthly'):
         categories = df['Start_Time'].dt.month.value_counts().sort_index().index
-
-        values1 = Severity1['Start_Time'].dt.month.value_counts().sort_index()
-        values2 = Severity2['Start_Time'].dt.month.value_counts().sort_index()
-        values3 = Severity3['Start_Time'].dt.month.value_counts().sort_index()
-        values4 = Severity4['Start_Time'].dt.year.value_counts().sort_index()
-
-        trace1 = go.Bar(
-            x=categories,
-            y=values1.values,
-            name='Series 1',
-            
-        )
-        trace2 = go.Bar(
-            x=categories,
-            y=values2.values,
-            name='Series 2',
-            
-        )
-        trace3 = go.Bar(
-            x=categories,
-            y=values3.values,
-            name='Series 3',
-            
-        )
-        trace4 = go.Bar(
-            x=categories,
-            y=values4.values,
-            name='Series 4',
-            
-        )
-
-        # Create the figure
-        fig = go.Figure(data=[trace1, trace2, trace3, trace4])
-        # Update layout for better visualization
-        fig.update_layout(
-            title='Multiple Bar Chart',
-            #xaxis=dict(title='Categories'),
-            #yaxis=dict(title='Values'),
-            barmode='group',  # This will group the bars side by side
-            bargap=0.15,      # Gap between bars of adjacent location coordinates
-            bargroupgap=0.1   # Gap between bars of the same location coordinate
-        )
-
-        return fig
+        values1 = Severity[0]['Start_Time'].dt.month.value_counts().sort_index()
+        values2 = Severity[1]['Start_Time'].dt.month.value_counts().sort_index()
+        values3 = Severity[2]['Start_Time'].dt.month.value_counts().sort_index()
+        values4 = Severity[3]['Start_Time'].dt.year.value_counts().sort_index()
+        return [categories,values1,values2,values3,values4]
     
     if (TimeInterval == 'Daily'):
         categories = df['Start_Time'].dt.dayofweek.value_counts().sort_index().index
-
-        values1 = Severity1['Start_Time'].dt.dayofweek.value_counts().sort_index()
-        values2 = Severity2['Start_Time'].dt.dayofweek.value_counts().sort_index()
-        values3 = Severity3['Start_Time'].dt.dayofweek.value_counts().sort_index()
-        values4 = Severity4['Start_Time'].dt.year.value_counts().sort_index()
-
-        trace1 = go.Bar(
-            x=categories,
-            y=values1.values,
-            name='Series 1'
-        )
-        trace2 = go.Bar(
-            x=categories,
-            y=values2.values,
-            name='Series 2'
-        )
-        trace3 = go.Bar(
-            x=categories,
-            y=values3.values,
-            name='Series 3'
-        )
-
-        trace4 = go.Bar(
-            x=categories,
-            y=values4.values,
-            name='Series 4'
-        )
-
-        # Create the figure
-        fig = go.Figure(data=[trace1, trace2, trace3, trace4])
-        # Update layout for better visualization
-        fig.update_layout(
-            title='Multiple Bar Chart',
-            #xaxis=dict(title='Categories'),
-            #yaxis=dict(title='Values'),
-            barmode='group',  # This will group the bars side by side
-            bargap=0.15,      # Gap between bars of adjacent location coordinates
-            bargroupgap=0.1   # Gap between bars of the same location coordinate
-        )
-
-        return fig
+        values1 = Severity[0]['Start_Time'].dt.dayofweek.value_counts().sort_index()
+        values2 = Severity[1]['Start_Time'].dt.dayofweek.value_counts().sort_index()
+        values3 = Severity[2]['Start_Time'].dt.dayofweek.value_counts().sort_index()
+        values4 = Severity[3]['Start_Time'].dt.year.value_counts().sort_index()
+        return [categories,values1,values2,values3,values4]
     
     if (TimeInterval == 'Hourly'):
         categories = df['Start_Time'].dt.hour.value_counts().sort_index().index
-
-        values1 = Severity1['Start_Time'].dt.hour.value_counts().sort_index()
-        values2 = Severity2['Start_Time'].dt.hour.value_counts().sort_index()
-        values3 = Severity3['Start_Time'].dt.hour.value_counts().sort_index()
-        values4 = Severity4['Start_Time'].dt.year.value_counts().sort_index()
-
-        trace1 = go.Bar(
-            x=categories,
-            y=values1.values,
-            name='Series 1'
-        )
-        trace2 = go.Bar(
-            x=categories,
-            y=values2.values,
-            name='Series 2'
-        )
-        trace3 = go.Bar(
-            x=categories,
-            y=values3.values,
-            name='Series 3'
-        )
-        trace4 = go.Bar(
-            x=categories,
-            y=values4.values,
-            name='Series 4'
-        )
-
-        # Create the figure
-        fig = go.Figure(data=[trace1, trace2, trace3, trace4])
-        # Update layout for better visualization
-        fig.update_layout(
-            title='Multiple Bar Chart',
-            #xaxis=dict(title='Categories'),
-            #yaxis=dict(title='Values'),
-            barmode='group',  # This will group the bars side by side
-            bargap=0.15,      # Gap between bars of adjacent location coordinates
-            bargroupgap=0.1   # Gap between bars of the same location coordinate
-        )
-
-        return fig
-    
-
-    #pie chart for distribution of severity of the accident
-
-def PieChart(df_acc, time_interval):
+        values1 = Severity[0]['Start_Time'].dt.hour.value_counts().sort_index()
+        values2 = Severity[1]['Start_Time'].dt.hour.value_counts().sort_index()
+        values3 = Severity[2]['Start_Time'].dt.hour.value_counts().sort_index()
+        values4 = Severity[3]['Start_Time'].dt.year.value_counts().sort_index()
+        return [categories,values1,values2,values3,values4]
 
     
-    if(time_interval != 'all'):
 
-        #bad solution:
-        if(time_interval=='2016'):
-            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2016)]
-        elif(time_interval=='2017'):
-            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2017)]
-        elif(time_interval=='2018'):
-            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2018)]
-        elif(time_interval=='2019'):
-            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2019)]
-        elif(time_interval=='2020'):
-            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2020)]
-        elif(time_interval=='2021'):
-            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2021)]
-        elif(time_interval=='2022'):
-            df_acc = df_acc[(df_acc['Start_Time'].dt.year == 2022)]   
-        #time_interval = 2016
-        #df_acc = df_acc[(df_acc['Start_Time'].dt.year == time_interval)]
-    # Calculate the distribution of 'severity'
-    severity_counts = df_acc['Severity'].value_counts().sort_index()
+def MultiBarChart(df, TimeInterval, Sampling_Factor):
+    #devide dataset on severity of the accident
+    Severity = [df[df.Severity == 1], df[df.Severity == 2], df[df.Severity == 3], df[df.Severity == 4]]
+    [categories,values1,values2,values3,values4] = GrouBySeverity(df, TimeInterval, Severity)
+        
+    # create single bars
+    trace1 = go.Bar(
+        x=categories,
+        y=values1.values * Sampling_Factor,
+        name='Very Light',
+        marker=dict(color = GRADE1COLOR),
+        textposition='auto'
+    )
+    trace2 = go.Bar(
+        x=categories,
+        y=values2.values * Sampling_Factor,
+        name='Light',
+        marker=dict(color = GRADE2COLOR),
+        textposition='auto'
+    )
+    trace3 = go.Bar(
+        x=categories,
+        y=values3.values * Sampling_Factor,
+        name='Medium',
+        marker=dict(color = GRADE3COLOR),
+        textposition='auto'
+    )
+    trace4 = go.Bar(
+        x=categories,
+        y=values4.values * Sampling_Factor,
+        name='High',
+        marker=dict(color = GRADE4COLOR),
+        textposition='auto'
+    )
 
-    # Create a pie chart
-    fig = px.pie(values=severity_counts, names=severity_counts.index, title="Distribution of Severity")
+    # Create the figure
+    fig = go.Figure(data=[trace1, trace2, trace3, trace4])
+
+    # Update layout for better visualization
+    fig.update_layout(
+        title='Effect on Traffic',
+        xaxis=dict(title='Categories'),
+        yaxis=dict(title='Values'),
+        barmode='group',  # This will group the bars side by side
+        bargap=0.15,      # Gap between bars of adjacent location coordinates
+        bargroupgap=0.1   # Gap between bars of the same location coordinate
+    )
 
     return fig
+       
+def PieChart(df_acc, time_interval):
+    # Filter the DataFrame based on the provided time interval
+    if time_interval != 'all':
+        df_acc = df_acc[df_acc['Start_Time'].dt.year == int(time_interval)]
+
+    # Calculate the distribution of 'Severity'
+    severity_counts = df_acc['Severity'].value_counts().sort_index()
+
+    # Define the severity names corresponding to severity counts index
+    severity_names = ['Very Light', 'Light', 'Medium', 'High']
+
+    # Create a mapping from severity index to names
+    severity_index_to_name = {i: name for i, name in zip(severity_counts.index, severity_names)}
+
+    # Map the severity index to names
+    severity_counts.index = severity_counts.index.map(severity_index_to_name)
+
+    # Create a pie chart
+    fig = px.pie(values=severity_counts, 
+                 names=severity_counts.index,
+                 title="Distribution of Severity",
+                 color=severity_counts.index,  # Specify the column for the colors
+                 color_discrete_map={
+                     'Very Light': GRADE1COLOR,
+                     'Light': GRADE2COLOR,
+                     'Medium': GRADE3COLOR,
+                     'High': GRADE4COLOR
+                    }
+                )
+
+    # Update the layout for the legend
+    fig.update_layout(legend_title_text='Effect on traffic')
+
+    return fig
+
 
 # number of accidents per 100,000 abitants
 def BestWorstAcc(df_acc, df_pop, time_interval, orderby, SampleRescalingFactor):
