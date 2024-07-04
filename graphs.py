@@ -190,6 +190,43 @@ def BestWorstAcc(df_acc, df_pop, time_interval, orderby, SampleRescalingFactor):
     # Calculate accident rate per 100,000 population
     merged_data['Accident_Rate_per_100k'] = (merged_data['Accident_Count'] / merged_data['Population']) * 100000 * SampleRescalingFactor
 
+    data = merged_data
+    # Select data for a specific year
+    if(time_interval != 'all'):
+        data = merged_data[merged_data['Year'] == int(time_interval)]
+
+    if(orderby=='WorstToBest'):
+        # Sort the data by Accident_Rate_per_100k in descending order
+        data = data.sort_values(by='Accident_Rate_per_100k', ascending=False)
+    if(orderby=='BestToWorst'):
+        data = data.sort_values(by='Accident_Rate_per_100k', ascending=True)
+    
+    # Create the bar chart using Plotly
+    fig = px.bar(
+        data,
+        y='State',
+        x='Accident_Rate_per_100k',
+        title=f'Accidents per 100,000 Residents by State in {time_interval}',
+        labels={'Accident_Rate_per_100k': 'Accidents per 100,000 Residents'},
+        height=850
+    )
+    return fig
+
+# number of accidents per 100,000 abitants
+def BestWorstAccorig(df_acc, df_pop, time_interval, orderby, SampleRescalingFactor):
+    
+    # Group accident data by state and year
+    accidents_grouped = df_acc.groupby(['State', 'Year']).size().reset_index(name='Accident_Count')
+
+    # Reshape population data from wide to long format
+    population_long = pd.melt(df_pop, id_vars=['Year'], var_name='State', value_name='Population')
+
+    # Merge population data with accidents data
+    merged_data = pd.merge(accidents_grouped, population_long, how='inner', on=['State', 'Year'])
+
+    # Calculate accident rate per 100,000 population
+    merged_data['Accident_Rate_per_100k'] = (merged_data['Accident_Count'] / merged_data['Population']) * 100000 * SampleRescalingFactor
+
     # Select data for a specific year
     data_specific_year = merged_data[merged_data['Year'] == int(time_interval)]
 
@@ -202,11 +239,14 @@ def BestWorstAcc(df_acc, df_pop, time_interval, orderby, SampleRescalingFactor):
     # Create the bar chart using Plotly
     fig = px.bar(
         data_specific_year,
-        x='State',
-        y='Accident_Rate_per_100k',
+        y='State',
+        x='Accident_Rate_per_100k',
         title=f'Accidents per 100,000 Residents by State in {time_interval}',
         labels={'Accident_Rate_per_100k': 'Accidents per 100,000 Residents'},
-        text='Accident_Rate_per_100k'
+        text='Accident_Rate_per_100k',
+        #width='auto',
+        height=750
+        
     )
     return fig
 
