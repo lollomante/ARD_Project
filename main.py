@@ -26,10 +26,29 @@ import os
 # all_time_peak_date    -> date of the all time peak
 #-------------------------------------------------------------------------------------------------------------
 
-# pandas
-# import dataset
-path_game_data_csv = 'US_Accidents.csv'
-data = pd.read_csv(path_game_data_csv)
+import pandas as pd
 
-print(data.info())
+# Load the dataset
+data = pd.read_csv('Dataset\\US_Accidents_Sampled.csv')
+
+# Define the bins and labels
+#bins = list(range(0, 11, 1))  # Bins: [0-10), [10-20), ..., [100-110)
+#labels = [i for i in range(0, 10, 1)]  # Labels: 0, 10, 20, ..., 90
+
+# Discretize the 'Visibility(mi)' column
+#data['Visibility_Discretized'] = pd.cut(data['Visibility(mi)'], bins=bins, labels=labels, right=False)
+
+# Optional: Convert labels to integer type for convenience
+#data['Visibility_Discretized'] = data['Visibility_Discretized'].astype(float).fillna(100).astype(int)
+
+# Display the first few rows to verify
+#print(data[['Visibility(mi)', 'Visibility_Discretized']].head())
+# Seleziona la colonna categoriale (sostituisci 'colonna_categoriale' con il nome effettivo della tua colonna)
+condizioni_meteo = data['Weather_Condition']
+
+# Utilizza il metodo value_counts() per ottenere il conteggio delle voci uniche
+count = condizioni_meteo.value_counts()
+
+# Stampa i risultati
+print(count[count > 10])
 
