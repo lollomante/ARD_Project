@@ -5,6 +5,15 @@ GRADE2COLOR = 'rgb(255, 255, 51)'
 GRADE3COLOR = 'rgb(255, 127, 0)'
 GRADE4COLOR = 'rgb(228, 26, 20)'
 
+# background color
+BACKGROUND_COLOR = 'rgb(167, 177, 181)'
+
+# graph dimensions
+BESTWORST_HEIGHT = 700
+TOP_ROW_HEIGHT = 350
+BOTTOM_ROW_HEIGHT = 350
+
+
 
 state_to_index = {'AL': 0,'AK': 1,'AZ': 2,'AR': 3,'CA': 4,'CO': 5,'CT': 6,'DE': 7,
         'FL': 8,

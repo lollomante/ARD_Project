@@ -19,7 +19,8 @@ def SingleBarChart(df, TimeInterval, Sampling_Factor):
             x = yearly_counts.index, 
             y = yearly_counts.values,          
             labels = {'x': 'Year', 'y': 'Number of Accidents'},
-            title = 'Number of Accidents per Year'
+            title = 'Number of Accidents per Year',
+            height=TOP_ROW_HEIGHT
         )
         return fig
     
@@ -29,7 +30,8 @@ def SingleBarChart(df, TimeInterval, Sampling_Factor):
             x = monthly_counts.index, 
             y = monthly_counts.values,          
             labels = {'x': 'Month', 'y': 'Number of Accidents'},
-            title = 'Number of Accidents per Month'
+            title = 'Number of Accidents per Month',
+            height=TOP_ROW_HEIGHT
         )
         return fig
    
@@ -40,7 +42,8 @@ def SingleBarChart(df, TimeInterval, Sampling_Factor):
             x = [day_names[day] for day in daily_counts.index], 
             y = daily_counts.values,          
             labels = {'x': 'Day of the Week', 'y': 'Number of Accidents'},
-            title = 'Number of Accidents per Day'
+            title = 'Number of Accidents per Day',
+            height=TOP_ROW_HEIGHT
         )
         return fig
     
@@ -50,7 +53,8 @@ def SingleBarChart(df, TimeInterval, Sampling_Factor):
             x = hourly_counts.index, 
             y = hourly_counts.values,          
             labels = {'x': 'Hour', 'y': 'Number of Accidents'},
-            title = 'Number of Accidents per Hour'
+            title = 'Number of Accidents per Hour',
+            height=TOP_ROW_HEIGHT
         )
         return fig
 
@@ -86,8 +90,6 @@ def GrouBySeverity(df, TimeInterval, Severity):
         values3 = Severity[2]['Start_Time'].dt.hour.value_counts().sort_index()
         values4 = Severity[3]['Start_Time'].dt.year.value_counts().sort_index()
         return [categories,values1,values2,values3,values4]
-
-    
 
 def MultiBarChart(df, TimeInterval, Sampling_Factor):
     #devide dataset on severity of the accident
@@ -134,7 +136,8 @@ def MultiBarChart(df, TimeInterval, Sampling_Factor):
         yaxis=dict(title='Values'),
         barmode='group',  # This will group the bars side by side
         bargap=0.15,      # Gap between bars of adjacent location coordinates
-        bargroupgap=0.1   # Gap between bars of the same location coordinate
+        bargroupgap=0.1,  # Gap between bars of the same location coordinate
+        height=TOP_ROW_HEIGHT
     )
 
     return fig
@@ -166,7 +169,8 @@ def PieChart(df_acc, time_interval):
                      'Light': GRADE2COLOR,
                      'Medium': GRADE3COLOR,
                      'High': GRADE4COLOR
-                    }
+                    },
+                height=TOP_ROW_HEIGHT
                 )
 
     # Update the layout for the legend
@@ -208,7 +212,7 @@ def BestWorstAcc(df_acc, df_pop, time_interval, orderby, SampleRescalingFactor):
         x='Accident_Rate_per_100k',
         title=f'Accidents per 100,000 Residents by State in {time_interval}',
         labels={'Accident_Rate_per_100k': 'Accidents per 100,000 Residents'},
-        height=850
+        height=BESTWORST_HEIGHT
     )
     return fig
 
@@ -251,3 +255,33 @@ def BestWorstAccorig(df_acc, df_pop, time_interval, orderby, SampleRescalingFact
     return fig
 
 
+def TemperaturePIE(df_acc, input):
+    # Create temperature bins
+    T_max = df_acc['Temperature(C)'].max()*2
+    T_min = df_acc['Temperature(C)'].min()*2
+
+    bins = [T_min, -30, -10,  10, 25, 40, T_max]
+    labels = ['Extremely Cold', 'Very Cold', 'Cold', 'Average', 'Hot', 'Very Hot']
+    # Assign temperature ranges to each row
+    df_acc['Temperature_Category'] = pd.cut(df_acc['Temperature(C)'], bins=bins, labels=labels, include_lowest=True)
+
+    # create labels using all unique values in the column named "population"
+    labels = df_acc['Temperature_Category'].unique()# group by count of the "population" column.
+    values = df_acc['Temperature_Category'].value_counts()
+
+
+    # create piechart
+    fig = go.Figure(
+        data = [
+            go.Pie(
+                values=values,
+                labels=labels,
+                pull=[0, 0.002, 0.005, 0.07, 0.08, 0.09],
+            )
+        ],
+        layout=go.Layout(
+            height = BOTTOM_ROW_HEIGHT,
+            margin=dict(t=0, b=0, l=0, r=0), 
+        )
+    )
+    return fig
