@@ -13,7 +13,77 @@ BESTWORST_HEIGHT = 700
 TOP_ROW_HEIGHT = 350
 BOTTOM_ROW_HEIGHT = 350
 
+# Graph Labels
+CODE_TO_NAME = {
+    'AL': 'Alabama',
+    'AK': 'Alaska',
+    'AZ': 'Arizona',
+    'AR': 'Arkansas',
 
+    'CA': 'California',
+    'CO': 'Colorado',
+    'CT': 'Connecticut',
+
+    'DE': 'Delaware',
+
+    'FL': 'Florida',
+
+    'GA': 'Georgia',
+
+    'HI': 'Hawaii',
+
+    'ID':  'Idaho',
+    'IL': 'Illinois',
+    'IN': 'Indiana',
+    'IA': 'Iowa',
+
+    'KS': 'Kansas',
+    'KY': 'Kentucky',
+        
+    'LA': 'Louisiana',
+
+    'ME': 'Maine',
+    'MD': 'Maryland',
+    'MA': 'Massachusetts',
+    'MI': 'Michigan',
+    'MN': 'Minnesota',
+    'MS': 'Mississippi',
+    'MO': 'Missouri',
+    'MT': 'Montana',
+
+    'NE': 'Nebraska',
+    'NV': 'Nevada',
+    'NH': 'New Hampshire',
+    'NJ': 'New Jersey',
+    'NM': 'New Mexico',
+    'NY': 'New York',
+    'NC': 'North Carolina',
+    'ND': 'North Dakota',
+
+    'OH': 'Ohio',
+    'OK': 'Oklahoma',
+    'OR': 'Oregon',
+
+    'PA': 'Pennsylvania',
+
+    'RI': 'Rhode Island',
+
+    'SC': 'South Carolina',
+    'SD': 'South Dakota',
+        
+    'TN': 'Tennessee',
+    'TX': 'Texas',
+
+    'UT':'Utah',
+
+    'VT': 'Vermont',
+    'VA': 'Virginia',
+
+    'WA': 'Washington',
+    'WV': 'West Virginia',
+    'WI': 'Wisconsin',
+    'WY': 'Wyoming',
+}
 
 state_to_index = {'AL': 0,'AK': 1,'AZ': 2,'AR': 3,'CA': 4,'CO': 5,'CT': 6,'DE': 7,
         'FL': 8,
@@ -70,20 +140,29 @@ state_to_index = {
         'Alaska': 1,
         'Arizona': 2,
         'Arkansas': 3,
+
         'California': 4,
         'Colorado': 5,
         'Connecticut': 6,
+
         'Delaware': 7,
+
         'Florida': 8,
+
         'Georgia': 9,
+
         'Hawaii': 10,
+
         'Idaho': 11,
         'Illinois': 12,
         'Indiana': 13,
         'Iowa': 14,
+
         'Kansas': 15,
         'Kentucky': 16,
+
         'Louisiana': 17,
+
         'Maine': 18,
         'Maryland': 19,
         'Massachusetts': 20,
@@ -92,6 +171,7 @@ state_to_index = {
         'Mississippi': 23,
         'Missouri': 24,
         'Montana': 25,
+
         'Nebraska': 26,
         'Nevada': 27,
         'New Hampshire': 28,
@@ -100,18 +180,26 @@ state_to_index = {
         'New York': 31,
         'North Carolina': 32,
         'North Dakota': 33,
+
         'Ohio': 34,
         'Oklahoma': 35,
         'Oregon': 36,
+
         'Pennsylvania': 37,
+
         'Rhode Island': 38,
+
         'South Carolina': 39,
         'South Dakota': 40,
+
         'Tennessee': 41,
         'Texas': 42,
+
         'Utah': 43,
+
         'Vermont': 44,
         'Virginia': 45,
+
         'Washington': 46,
         'West Virginia': 47,
         'Wisconsin': 48,

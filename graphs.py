@@ -9,89 +9,76 @@ from dash import Dash, Input, Output, html, dcc
 import plotly.express as px
 
 from constants import *
+from utility_functions import *
 
 
-def SingleBarChart(df, TimeInterval, Sampling_Factor):
 
-    if (TimeInterval == 'Yearly'):
-        yearly_counts = (df['Start_Time'].dt.year.value_counts().sort_index())*Sampling_Factor
-        fig = px.bar(
-            x = yearly_counts.index, 
-            y = yearly_counts.values,          
-            labels = {'x': 'Year', 'y': 'Number of Accidents'},
-            title = 'Number of Accidents per Year',
-            height=TOP_ROW_HEIGHT
-        )
-        return fig
-    
-    if (TimeInterval == 'Monthly'):
-        monthly_counts = (df['Start_Time'].dt.month.value_counts().sort_index())*Sampling_Factor
-        fig = px.bar(
-            x = monthly_counts.index, 
-            y = monthly_counts.values,          
-            labels = {'x': 'Month', 'y': 'Number of Accidents'},
-            title = 'Number of Accidents per Month',
-            height=TOP_ROW_HEIGHT
-        )
-        return fig
-   
-    if (TimeInterval == 'Daily'):
-        daily_counts = (df['Start_Time'].dt.dayofweek.value_counts().sort_index())*Sampling_Factor
-        day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        fig = px.bar(
-            x = [day_names[day] for day in daily_counts.index], 
-            y = daily_counts.values,          
-            labels = {'x': 'Day of the Week', 'y': 'Number of Accidents'},
-            title = 'Number of Accidents per Day',
-            height=TOP_ROW_HEIGHT
-        )
-        return fig
-    
-    if (TimeInterval == 'Hourly'):
-        hourly_counts = (df['Start_Time'].dt.hour.value_counts().sort_index())*Sampling_Factor
-        fig = px.bar(
-            x = hourly_counts.index, 
-            y = hourly_counts.values,          
-            labels = {'x': 'Hour', 'y': 'Number of Accidents'},
-            title = 'Number of Accidents per Hour',
-            height=TOP_ROW_HEIGHT
-        )
-        return fig
+def SingleBarChart(df, TimeInterval, Sampling_Factor, year):
 
-def GrouBySeverity(df, TimeInterval, Severity):
-    if (TimeInterval == 'Yearly'):
-        categories = df['Start_Time'].dt.year.value_counts().sort_index().index
-        values1 = Severity[0]['Start_Time'].dt.year.value_counts().sort_index()
-        values2 = Severity[1]['Start_Time'].dt.year.value_counts().sort_index()
-        values3 = Severity[2]['Start_Time'].dt.year.value_counts().sort_index()
-        values4 = Severity[3]['Start_Time'].dt.year.value_counts().sort_index()
-        return [categories,values1,values2,values3,values4]
+    # Filter by year
+    df = FilterByYear(df, year)
     
-    if (TimeInterval == 'Monthly'):
-        categories = df['Start_Time'].dt.month.value_counts().sort_index().index
-        values1 = Severity[0]['Start_Time'].dt.month.value_counts().sort_index()
-        values2 = Severity[1]['Start_Time'].dt.month.value_counts().sort_index()
-        values3 = Severity[2]['Start_Time'].dt.month.value_counts().sort_index()
-        values4 = Severity[3]['Start_Time'].dt.year.value_counts().sort_index()
-        return [categories,values1,values2,values3,values4]
-    
-    if (TimeInterval == 'Daily'):
-        categories = df['Start_Time'].dt.dayofweek.value_counts().sort_index().index
-        values1 = Severity[0]['Start_Time'].dt.dayofweek.value_counts().sort_index()
-        values2 = Severity[1]['Start_Time'].dt.dayofweek.value_counts().sort_index()
-        values3 = Severity[2]['Start_Time'].dt.dayofweek.value_counts().sort_index()
-        values4 = Severity[3]['Start_Time'].dt.year.value_counts().sort_index()
-        return [categories,values1,values2,values3,values4]
-    
-    if (TimeInterval == 'Hourly'):
-        categories = df['Start_Time'].dt.hour.value_counts().sort_index().index
-        values1 = Severity[0]['Start_Time'].dt.hour.value_counts().sort_index()
-        values2 = Severity[1]['Start_Time'].dt.hour.value_counts().sort_index()
-        values3 = Severity[2]['Start_Time'].dt.hour.value_counts().sort_index()
-        values4 = Severity[3]['Start_Time'].dt.year.value_counts().sort_index()
-        return [categories,values1,values2,values3,values4]
+    # Define time intervals mapping dictionary
+    interval_mapping = {
+        'Yearly': {
+            'resample': df['Start_Time'].dt.year,
+            'xlabel': 'Year',
+            'title': 'Number of Accidents per Year',
+            'xlabels': ['2017', '2018', '2019', '2020','2021', '2022']
+        },
+        'Monthly': {
+            'resample': df['Start_Time'].dt.month,
+            'xlabel': 'Month',
+            'title': 'Number of Accidents per Month',
+            'xlabels': ['Genuary', 'February', 'March', 'April','May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        },
+        'Daily': {
+            'resample': df['Start_Time'].dt.dayofweek,
+            'xlabel': 'Day of the Week',
+            'title': 'Number of Accidents per Day',
+            'xlabels': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        },
+        'Hourly': {
+            'resample': df['Start_Time'].dt.hour,
+            'xlabel': 'Hour',
+            'title': 'Number of Accidents per Hour',
+            #'xlabels': ['00:00', '01:00', '02:00', '03:00','04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00',
+            #            '11:00', '12:00', '01:00 PM', '02:00 PM', '03:00 PM','04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', 
+            #            '08:00 PM', '09:00 PM', '10:00 PM','11:00 PM', 
+            #x            ]
 
-def MultiBarChart(df, TimeInterval, Sampling_Factor):
+        }
+    }
+    
+    # Validate TimeInterval
+    if TimeInterval not in interval_mapping:
+        raise ValueError("TimeInterval must be one of 'Yearly', 'Monthly', 'Daily', or 'Hourly'")
+    
+    # Get resampling details
+    interval_details = interval_mapping[TimeInterval]
+    
+    # Calculate counts and apply Sampling_Factor
+    counts = (interval_details['resample'].value_counts().sort_index()) * Sampling_Factor
+    
+    # Define x labels
+    x_labels = interval_details.get('xlabels', counts.index)
+    
+    # Create bar chart
+    fig = px.bar(
+        x = x_labels, 
+        y = counts.values,          
+        labels = {'x': interval_details['xlabel'], 'y': 'Number of Accidents'},
+        title = interval_details['title'],
+        height = TOP_ROW_HEIGHT
+    )
+    
+    return fig
+
+
+def MultiBarChart(df, TimeInterval, Sampling_Factor, year):
+
+    df=FilterByYear(df,year)
+
     #devide dataset on severity of the accident
     Severity = [df[df.Severity == 1], df[df.Severity == 2], df[df.Severity == 3], df[df.Severity == 4]]
     [categories,values1,values2,values3,values4] = GrouBySeverity(df, TimeInterval, Severity)
@@ -179,8 +166,7 @@ def PieChart(df_acc, time_interval):
     return fig
 
 
-# number of accidents per 100,000 abitants
-def BestWorstAcc(df_acc, df_pop, time_interval, orderby, SampleRescalingFactor):
+def BestWorstAcc(df_acc, df_pop, time_interval, orderby, show_all, SampleRescalingFactor):
     
     # Group accident data by state and year
     accidents_grouped = df_acc.groupby(['State', 'Year']).size().reset_index(name='Accident_Count')
@@ -194,73 +180,49 @@ def BestWorstAcc(df_acc, df_pop, time_interval, orderby, SampleRescalingFactor):
     # Calculate accident rate per 100,000 population
     merged_data['Accident_Rate_per_100k'] = (merged_data['Accident_Count'] / merged_data['Population']) * 100000 * SampleRescalingFactor
 
-    data = merged_data
-    # Select data for a specific year
-    if(time_interval != 'all'):
+    if time_interval == 'all':
+        # Calculate the average accident rate per 100,000 population across all years
+        data = merged_data.groupby('State').agg({'Accident_Rate_per_100k': 'mean'}).reset_index()
+        title = 'Average Accidents per 100,000 Residents by State Across All Years'
+    else:
+        # Select data for a specific year
         data = merged_data[merged_data['Year'] == int(time_interval)]
+        title = f'Accidents per 100,000 Residents by State in {time_interval}'
 
-    if(orderby=='WorstToBest'):
+    if orderby == 'WorstToBest':
         # Sort the data by Accident_Rate_per_100k in descending order
-        data = data.sort_values(by='Accident_Rate_per_100k', ascending=False)
-    if(orderby=='BestToWorst'):
         data = data.sort_values(by='Accident_Rate_per_100k', ascending=True)
+    elif orderby == 'BestToWorst':
+        data = data.sort_values(by='Accident_Rate_per_100k', ascending=False)
     
+    if(not(show_all)):
+        data = data.tail(10)
+
     # Create the bar chart using Plotly
+
+    # Map the full state names to the DataFrame
+    data['State'] = data['State'].map(CODE_TO_NAME)
+
     fig = px.bar(
         data,
         y='State',
         x='Accident_Rate_per_100k',
-        title=f'Accidents per 100,000 Residents by State in {time_interval}',
+        title=title,
         labels={'Accident_Rate_per_100k': 'Accidents per 100,000 Residents'},
         height=BESTWORST_HEIGHT
     )
     return fig
 
-# number of accidents per 100,000 abitants
-def BestWorstAccorig(df_acc, df_pop, time_interval, orderby, SampleRescalingFactor):
-    
-    # Group accident data by state and year
-    accidents_grouped = df_acc.groupby(['State', 'Year']).size().reset_index(name='Accident_Count')
 
-    # Reshape population data from wide to long format
-    population_long = pd.melt(df_pop, id_vars=['Year'], var_name='State', value_name='Population')
+def TemperaturePIE(df_acc, year):
 
-    # Merge population data with accidents data
-    merged_data = pd.merge(accidents_grouped, population_long, how='inner', on=['State', 'Year'])
+    df_acc=FilterByYear(df_acc, year)
 
-    # Calculate accident rate per 100,000 population
-    merged_data['Accident_Rate_per_100k'] = (merged_data['Accident_Count'] / merged_data['Population']) * 100000 * SampleRescalingFactor
-
-    # Select data for a specific year
-    data_specific_year = merged_data[merged_data['Year'] == int(time_interval)]
-
-    if(orderby=='WorstToBest'):
-        # Sort the data by Accident_Rate_per_100k in descending order
-        data_specific_year = data_specific_year.sort_values(by='Accident_Rate_per_100k', ascending=False)
-    if(orderby=='BestToWorst'):
-        data_specific_year = data_specific_year.sort_values(by='Accident_Rate_per_100k', ascending=True)
-    
-    # Create the bar chart using Plotly
-    fig = px.bar(
-        data_specific_year,
-        y='State',
-        x='Accident_Rate_per_100k',
-        title=f'Accidents per 100,000 Residents by State in {time_interval}',
-        labels={'Accident_Rate_per_100k': 'Accidents per 100,000 Residents'},
-        text='Accident_Rate_per_100k',
-        #width='auto',
-        height=750
-        
-    )
-    return fig
-
-
-def TemperaturePIE(df_acc, input):
     # Create temperature bins
     T_max = df_acc['Temperature(C)'].max()*2
     T_min = df_acc['Temperature(C)'].min()*2
 
-    bins = [T_min, -30, -10,  10, 25, 40, T_max]
+    bins = [min(T_min,-40), -30, -10,  10, 25, 40, min(T_max,50)]
     labels = ['Extremely Cold', 'Very Cold', 'Cold', 'Average', 'Hot', 'Very Hot']
     # Assign temperature ranges to each row
     df_acc['Temperature_Category'] = pd.cut(df_acc['Temperature(C)'], bins=bins, labels=labels, include_lowest=True)
@@ -284,4 +246,27 @@ def TemperaturePIE(df_acc, input):
             margin=dict(t=0, b=0, l=0, r=0), 
         )
     )
+    return fig
+
+def LocationScatterPlot(df_acc, year, ViewMode):
+
+    # filter by year
+    df_acc = FilterByYear(df_acc, year)
+
+    fig = px.scatter(
+        df_acc, 
+        y= 'Start_Lat', 
+        x= 'Start_Lng', 
+        height=BOTTOM_ROW_HEIGHT,
+    )
+
+    if (ViewMode):
+        fig = px.scatter(
+            df_acc, 
+            y= 'Start_Lat', 
+            x= 'Start_Lng', 
+            height=BOTTOM_ROW_HEIGHT,
+            color = 'Severity'
+        )
+
     return fig
