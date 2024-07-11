@@ -1,4 +1,3 @@
-
 # external dependencies
 import pandas as pd
 import numpy as np
@@ -13,30 +12,30 @@ from utility_functions import *
 
 
 
-def SingleBarChart(df, TimeInterval, Sampling_Factor, year):
+def SingleBarChart(df_singlebar, TimeInterval, Sampling_Factor, year):
 
     # Filter by year
-    df = FilterByYear(df, year)
+    df_singlebar = FilterByYear(df_singlebar, year)
     
     # Define time intervals mapping dictionary
     interval_mapping = {
         'Yearly': {
-            'resample': df['Start_Time'].dt.year,
+            'resample': df_singlebar['Start_Time'].dt.year,
             'xlabel': 'Year',
             'xlabels': ['2017', '2018', '2019', '2020','2021', '2022']
         },
         'Monthly': {
-            'resample': df['Start_Time'].dt.month,
+            'resample': df_singlebar['Start_Time'].dt.month,
             'xlabel': 'Month',
             'xlabels': ['Genuary', 'February', 'March', 'April','May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         },
         'Daily': {
-            'resample': df['Start_Time'].dt.dayofweek,
+            'resample': df_singlebar['Start_Time'].dt.dayofweek,
             'xlabel': 'Day of the Week',
             'xlabels': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         },
         'Hourly': {
-            'resample': df['Start_Time'].dt.hour,
+            'resample': df_singlebar['Start_Time'].dt.hour,
             'xlabel': 'Hour',
             #'xlabels': ['00:00', '01:00', '02:00', '03:00','04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00',
             #            '11:00', '12:00', '01:00 PM', '02:00 PM', '03:00 PM','04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', 
@@ -70,13 +69,17 @@ def SingleBarChart(df, TimeInterval, Sampling_Factor, year):
     
     return fig
 
-def MultiBarChart(df, TimeInterval, Sampling_Factor, year):
+def MultiBarChart(df_multibar, TimeInterval, Sampling_Factor, year):
 
-    df=FilterByYear(df,year)
+    df_multibar=FilterByYear(df_multibar,year)
 
     #devide dataset on severity of the accident
-    Severity = [df[df.Severity == 1], df[df.Severity == 2], df[df.Severity == 3], df[df.Severity == 4]]
-    [categories,values1,values2,values3,values4] = GrouBySeverity(df, TimeInterval, Severity)
+    Severity = [df_multibar[df_multibar.Severity == '1'], 
+                df_multibar[df_multibar.Severity == '2'], 
+                df_multibar[df_multibar.Severity == '3'], 
+                df_multibar[df_multibar.Severity == '4']
+            ]
+    [categories,values1,values2,values3,values4] = GrouBySeverity(df_multibar, TimeInterval, Severity)
         
     # create single bars
     trace1 = go.Bar(
@@ -127,13 +130,13 @@ def MultiBarChart(df, TimeInterval, Sampling_Factor, year):
 
     return fig
        
-def PieChart(df_acc, time_interval):
+def PieChart(df_pie, time_interval):
     # Filter the DataFrame based on the provided time interval
     if time_interval != 'all':
-        df_acc = df_acc[df_acc['Start_Time'].dt.year == int(time_interval)]
+        df_pie = df_pie[df_pie['Start_Time'].dt.year == int(time_interval)]
 
     # Calculate the distribution of 'Severity'
-    severity_counts = df_acc['Severity'].value_counts().sort_index()
+    severity_counts = df_pie['Severity'].value_counts().sort_index()
 
     # Define the severity names corresponding to severity counts index
     severity_names = ['Very Light', 'Light', 'Medium', 'High']
@@ -163,13 +166,13 @@ def PieChart(df_acc, time_interval):
 
     return fig
 
-def BestWorstAcc(df_acc, df_pop, time_interval, orderby, show_all, SampleRescalingFactor):
+def BestWorstAcc(df_BW_acc, df_BW_pop, time_interval, orderby, show_all, SampleRescalingFactor):
     
     # Group accident data by state and year
-    accidents_grouped = df_acc.groupby(['State', 'Year']).size().reset_index(name='Accident_Count')
+    accidents_grouped = df_BW_acc.groupby(['State', 'Year']).size().reset_index(name='Accident_Count')
 
     # Reshape population data from wide to long format
-    population_long = pd.melt(df_pop, id_vars=['Year'], var_name='State', value_name='Population')
+    population_long = pd.melt(df_BW_pop, id_vars=['Year'], var_name='State', value_name='Population')
 
     # Merge population data with accidents data
     merged_data = pd.merge(accidents_grouped, population_long, how='inner', on=['State', 'Year'])
@@ -211,22 +214,22 @@ def BestWorstAcc(df_acc, df_pop, time_interval, orderby, show_all, SampleRescali
     return fig
 
 
-def TemperaturePIE(df_acc, year):
+def TemperaturePIE(df_temp, year):
 
-    df_acc=FilterByYear(df_acc, year)
+    df_temp=FilterByYear(df_temp, year)
 
     # Create temperature bins
-    T_max = df_acc['Temperature(C)'].max()*2
-    T_min = df_acc['Temperature(C)'].min()*2
+    T_max = df_temp['Temperature(C)'].max()*2
+    T_min = df_temp['Temperature(C)'].min()*2
 
     bins = [min(T_min,-40), -30, -10,  10, 25, 40, min(T_max,50)]
     labels = ['Extremely Cold', 'Very Cold', 'Cold', 'Average', 'Hot', 'Very Hot']
     # Assign temperature ranges to each row
-    df_acc['Temperature_Category'] = pd.cut(df_acc['Temperature(C)'], bins=bins, labels=labels, include_lowest=True)
+    df_temp['Temperature_Category'] = pd.cut(df_temp['Temperature(C)'], bins=bins, labels=labels, include_lowest=True)
 
     # create labels using all unique values in the column named "population"
-    labels = df_acc['Temperature_Category'].unique()# group by count of the "population" column.
-    values = df_acc['Temperature_Category'].value_counts()
+    labels = df_temp['Temperature_Category'].unique()# group by count of the "population" column.
+    values = df_temp['Temperature_Category'].value_counts()
 
 
     # create piechart
@@ -246,26 +249,35 @@ def TemperaturePIE(df_acc, year):
     )
     return fig
 
-def LocationScatterPlot(df_acc, year, ViewMode):
+def LocationScatterPlot(df_loc, year, ViewMode):
 
     # filter by year
-    df_acc = FilterByYear(df_acc, year)
+    df_loc = FilterByYear(df_loc, year)
+
+    if (ViewMode):
+        color_discrete_map ={
+            '1' : GRADE1COLOR,
+            '2' : GRADE2COLOR,
+            '3' : GRADE3COLOR,
+            '4' : GRADE4COLOR
+        }
+
+        fig = px.scatter(
+            df_loc, 
+            y= 'Start_Lat', 
+            x= 'Start_Lng', 
+            height=BOTTOM_ROW_HEIGHT,
+            color = 'Severity',
+            color_discrete_map=color_discrete_map
+        )
+        return fig
 
     fig = px.scatter(
-        df_acc, 
+        df_loc, 
         y= 'Start_Lat', 
         x= 'Start_Lng', 
         height=BOTTOM_ROW_HEIGHT,
         title=TITLE_ACCIDENT_LOC_SCATTER,
     )
-
-    if (ViewMode):
-        fig = px.scatter(
-            df_acc, 
-            y= 'Start_Lat', 
-            x= 'Start_Lng', 
-            height=BOTTOM_ROW_HEIGHT,
-            color = 'Severity'
-        )
 
     return fig
