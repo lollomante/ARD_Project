@@ -10,8 +10,26 @@ BACKGROUND_COLOR = 'rgb(167, 177, 181)'
 
 # graph dimensions
 BESTWORST_HEIGHT = 700
-TOP_ROW_HEIGHT = 350
-BOTTOM_ROW_HEIGHT = 350
+TOP_ROW_HEIGHT = 345
+BOTTOM_ROW_HEIGHT = 345
+
+# graph titles
+TITLE_TEMPORAL_DIST_BARCHART = {
+    'Yearly' : 'Number of Accidents per Year',
+    'Monthly' : 'Number of Accidents per Month',
+    'Daily' : 'Number of Accidents per Day',
+    'Hourly' : 'Number of Accidents per Hour'
+}
+TITLE_SEVERITY_DIST_PIECHART = 'Distribution of Severity'
+TITLE_TEMPERATURE_PIECHART = 'Ambient temperature distribution'
+TITLE_ACCIDENT_LOC_SCATTER = 'Accient Locations'
+
+
+
+TEMPORAL_DIST_BARCHART_MONTH = 'Number of Accidents per Month'
+TEMPORAL_DIST_BARCHART_DAY = 'Number of Accidents per Day'
+TEMPORAL_DIST_BARCHART_HOUR = 'Number of Accidents per Hour'
+
 
 # Graph Labels
 CODE_TO_NAME = {

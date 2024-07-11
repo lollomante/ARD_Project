@@ -23,25 +23,21 @@ def SingleBarChart(df, TimeInterval, Sampling_Factor, year):
         'Yearly': {
             'resample': df['Start_Time'].dt.year,
             'xlabel': 'Year',
-            'title': 'Number of Accidents per Year',
             'xlabels': ['2017', '2018', '2019', '2020','2021', '2022']
         },
         'Monthly': {
             'resample': df['Start_Time'].dt.month,
             'xlabel': 'Month',
-            'title': 'Number of Accidents per Month',
             'xlabels': ['Genuary', 'February', 'March', 'April','May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         },
         'Daily': {
             'resample': df['Start_Time'].dt.dayofweek,
             'xlabel': 'Day of the Week',
-            'title': 'Number of Accidents per Day',
             'xlabels': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         },
         'Hourly': {
             'resample': df['Start_Time'].dt.hour,
             'xlabel': 'Hour',
-            'title': 'Number of Accidents per Hour',
             #'xlabels': ['00:00', '01:00', '02:00', '03:00','04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00',
             #            '11:00', '12:00', '01:00 PM', '02:00 PM', '03:00 PM','04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', 
             #            '08:00 PM', '09:00 PM', '10:00 PM','11:00 PM', 
@@ -68,12 +64,11 @@ def SingleBarChart(df, TimeInterval, Sampling_Factor, year):
         x = x_labels, 
         y = counts.values,          
         labels = {'x': interval_details['xlabel'], 'y': 'Number of Accidents'},
-        title = interval_details['title'],
+        title = TITLE_TEMPORAL_DIST_BARCHART[TimeInterval],
         height = TOP_ROW_HEIGHT
     )
     
     return fig
-
 
 def MultiBarChart(df, TimeInterval, Sampling_Factor, year):
 
@@ -118,14 +113,17 @@ def MultiBarChart(df, TimeInterval, Sampling_Factor, year):
 
     # Update layout for better visualization
     fig.update_layout(
-        title='Effect on Traffic',
+        title=TITLE_TEMPORAL_DIST_BARCHART[TimeInterval],
         xaxis=dict(title='Categories'),
         yaxis=dict(title='Values'),
-        barmode='group',  # This will group the bars side by side
-        bargap=0.15,      # Gap between bars of adjacent location coordinates
-        bargroupgap=0.1,  # Gap between bars of the same location coordinate
+        barmode='group',  
+        bargap=0.15,      
+        bargroupgap=0.1,  
         height=TOP_ROW_HEIGHT
     )
+
+     # Update the layout for the legend
+    fig.update_layout(legend_title_text='Effect on traffic')
 
     return fig
        
@@ -149,7 +147,7 @@ def PieChart(df_acc, time_interval):
     # Create a pie chart
     fig = px.pie(values=severity_counts, 
                  names=severity_counts.index,
-                 title="Distribution of Severity",
+                 title=TITLE_SEVERITY_DIST_PIECHART,
                  color=severity_counts.index,  # Specify the column for the colors
                  color_discrete_map={
                      'Very Light': GRADE1COLOR,
@@ -164,7 +162,6 @@ def PieChart(df_acc, time_interval):
     fig.update_layout(legend_title_text='Effect on traffic')
 
     return fig
-
 
 def BestWorstAcc(df_acc, df_pop, time_interval, orderby, show_all, SampleRescalingFactor):
     
@@ -183,7 +180,7 @@ def BestWorstAcc(df_acc, df_pop, time_interval, orderby, show_all, SampleRescali
     if time_interval == 'all':
         # Calculate the average accident rate per 100,000 population across all years
         data = merged_data.groupby('State').agg({'Accident_Rate_per_100k': 'mean'}).reset_index()
-        title = 'Average Accidents per 100,000 Residents by State Across All Years'
+        title = 'Average Accidents per 100,000 Residents by State'
     else:
         # Select data for a specific year
         data = merged_data[merged_data['Year'] == int(time_interval)]
@@ -243,7 +240,8 @@ def TemperaturePIE(df_acc, year):
         ],
         layout=go.Layout(
             height = BOTTOM_ROW_HEIGHT,
-            margin=dict(t=0, b=0, l=0, r=0), 
+            #margin=dict(t=0, b=0, l=0, r=0), 
+            title=TITLE_TEMPERATURE_PIECHART,
         )
     )
     return fig
@@ -258,6 +256,7 @@ def LocationScatterPlot(df_acc, year, ViewMode):
         y= 'Start_Lat', 
         x= 'Start_Lng', 
         height=BOTTOM_ROW_HEIGHT,
+        title=TITLE_ACCIDENT_LOC_SCATTER,
     )
 
     if (ViewMode):
