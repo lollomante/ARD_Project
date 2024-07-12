@@ -30,9 +30,68 @@ TEMPORAL_DIST_BARCHART_MONTH = 'Number of Accidents per Month'
 TEMPORAL_DIST_BARCHART_DAY = 'Number of Accidents per Day'
 TEMPORAL_DIST_BARCHART_HOUR = 'Number of Accidents per Hour'
 
+# reordering maps
+HOUR_ORDER =    ['00:00 AM','01:00 AM','02:00 AM','03:00 AM','04:00 AM','05:00 AM','06:00 AM','07:00 AM','08:00 AM','09:00 AM', '10:00 AM','11:00 AM','12:00 AM',
+                      '01:00 PM','02:00 PM','03:00 PM','04:00 PM','05:00 PM','06:00 PM','07:00 pM','08:00 PM','09:00 PM','10:00 PM','11:00 PM',]
+DAY_ORDER =     ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+MONTH_ORDER =   ['January', 'February', 'March', 'April', 'May', 'June', 'July','August','September', 'October', 'November', 'December']
 
-# Graph Labels
-CODE_TO_NAME = {
+
+# renaming maps
+
+MONTH_MAP = {
+    1 : 'January', 
+    2 : 'February', 
+    3 : 'March', 
+    4 : 'April',
+    5 : 'May', 
+    6 : 'June', 
+    7 : 'July', 
+    8 : 'August',
+    9 : 'September',
+    10: 'October', 
+    11: 'November', 
+    12: 'December'
+}
+
+DAY_MAP = {
+    0: 'Monday', 
+    1: 'Tuesday', 
+    2: 'Wednesday', 
+    3: 'Thursday', 
+    4: 'Friday', 
+    5: 'Saturday', 
+    6: 'Sunday',
+}
+
+HOUR_MAP = {
+    0 : '00:00 AM',
+    1 : '01:00 AM',
+    2 : '02:00 AM',
+    3 : '03:00 AM',
+    4 : '04:00 AM',
+    5 : '05:00 AM',
+    6 : '06:00 AM',
+    7 : '07:00 AM',
+    8 : '08:00 AM',
+    9 : '09:00 AM',
+    10: '10:00 AM',
+    11: '11:00 AM',
+    12: '12:00 AM',
+    13: '01:00 PM',
+    14: '02:00 PM',
+    15: '03:00 PM',
+    16: '04:00 PM',
+    17: '05:00 PM',
+    18: '06:00 PM',
+    19: '07:00 pM',
+    20: '08:00 PM',
+    21: '09:00 PM',
+    22: '10:00 PM',
+    23: '11:00 PM',
+}
+
+STATE_MAP = {
     'AL': 'Alabama',
     'AK': 'Alaska',
     'AZ': 'Arizona',
@@ -103,123 +162,3 @@ CODE_TO_NAME = {
     'WY': 'Wyoming',
 }
 
-state_to_index = {'AL': 0,'AK': 1,'AZ': 2,'AR': 3,'CA': 4,'CO': 5,'CT': 6,'DE': 7,
-        'FL': 8,
-        'GA': 9,
-        'HI': 10,
-
-        'ID': 11,
-        'IL': 12,
-        'IN': 13,
-        'IA': 14,
-        'KS': 15,
-        'KY': 16,
-        'LA': 17,
-        'ME': 18,
-        'MD': 19,
-        'MA': 20,
-
-        'MI': 21,
-        'MN': 22,
-        'MS': 23,
-        'MO': 24,
-        'MT': 25,
-        'NE': 26,
-        'NV': 27,
-        'NH': 28,
-        'NJ': 29,
-        'NM': 30,
-
-        'NY': 31,
-        'NC': 32,
-        'ND': 33,
-        'OH': 34,
-        'OK': 35,
-        'OR': 36,
-        'PA': 37,
-        'RI': 38,
-        'SC': 39,
-        'SD': 40,
-        
-        'TN': 41,
-        'TX': 42,
-        'UT': 43,
-        'VT': 44,
-        'VA': 45,
-        'WA': 46,
-        'WV': 47,
-        'WI': 48,
-        'WY': 49,
-    }
-
-#states dictionary
-state_to_index = {
-        'Alabama': 0,
-        'Alaska': 1,
-        'Arizona': 2,
-        'Arkansas': 3,
-
-        'California': 4,
-        'Colorado': 5,
-        'Connecticut': 6,
-
-        'Delaware': 7,
-
-        'Florida': 8,
-
-        'Georgia': 9,
-
-        'Hawaii': 10,
-
-        'Idaho': 11,
-        'Illinois': 12,
-        'Indiana': 13,
-        'Iowa': 14,
-
-        'Kansas': 15,
-        'Kentucky': 16,
-
-        'Louisiana': 17,
-
-        'Maine': 18,
-        'Maryland': 19,
-        'Massachusetts': 20,
-        'Michigan': 21,
-        'Minnesota': 22,
-        'Mississippi': 23,
-        'Missouri': 24,
-        'Montana': 25,
-
-        'Nebraska': 26,
-        'Nevada': 27,
-        'New Hampshire': 28,
-        'New Jersey': 29,
-        'New Mexico': 30,
-        'New York': 31,
-        'North Carolina': 32,
-        'North Dakota': 33,
-
-        'Ohio': 34,
-        'Oklahoma': 35,
-        'Oregon': 36,
-
-        'Pennsylvania': 37,
-
-        'Rhode Island': 38,
-
-        'South Carolina': 39,
-        'South Dakota': 40,
-
-        'Tennessee': 41,
-        'Texas': 42,
-
-        'Utah': 43,
-
-        'Vermont': 44,
-        'Virginia': 45,
-
-        'Washington': 46,
-        'West Virginia': 47,
-        'Wisconsin': 48,
-        'Wyoming': 49,
-    }

@@ -18,10 +18,10 @@ def SingleBarChart(df_singlebar, TimeInterval, Sampling_Factor, year):
     df_singlebar = FilterByYear(df_singlebar, year)
 
     value_counts = {
-        'Yearly'  : (df_singlebar['Start_Time'].dt.year.value_counts().sort_index())*Sampling_Factor,
-        'Hourly'  : (df_singlebar['Start_Time'].dt.hour.value_counts().sort_index())*Sampling_Factor,
-        'Daily'   : (df_singlebar['Start_Time'].dt.dayofweek.value_counts().sort_index())*Sampling_Factor,
-        'Monthly' : (df_singlebar['Start_Time'].dt.month.value_counts().sort_index())*Sampling_Factor,
+        'Yearly'  : (df_singlebar['Year'].value_counts().sort_index())*Sampling_Factor,
+        'Hourly'  : (df_singlebar['Hour'].value_counts().sort_index())*Sampling_Factor,
+        'Daily'   : (df_singlebar['Day'].value_counts().sort_index())*Sampling_Factor,
+        'Monthly' : (df_singlebar['Month'].value_counts().sort_index())*Sampling_Factor,
     }
 
     # TimeInterval == 'Yearly'
@@ -36,24 +36,27 @@ def SingleBarChart(df_singlebar, TimeInterval, Sampling_Factor, year):
             x = value_counts[TimeInterval].index,
             y = value_counts[TimeInterval].values,           
             labels = {'x': 'Hour', 'y': 'Number of Accidents'},
+            category_orders={
+                "x": HOUR_ORDER
+            },
         )
     elif (TimeInterval == 'Daily'):
         fig = px.bar(
             x = value_counts[TimeInterval].index,
             y = value_counts[TimeInterval].values,          
-            #labels = {'x': 'Day of the Week', 'y': 'Number of Accidents'},
-            labels =    {
-                0 : 'Monday'
-            },
+            labels = {'x': 'Day of the Week', 'y': 'Number of Accidents'},
             category_orders={
-                 "x": ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-            }
+                "x": DAY_ORDER
+            },
         )
     elif (TimeInterval == 'Monthly'):
         fig = px.bar(
             x = value_counts[TimeInterval].index,
             y = value_counts[TimeInterval].values,    
-            #labels = {'x': 'Day of the Week', 'y': 'Number of Accidents'},
+            labels = {'x': 'Month', 'y': 'Number of Accidents'},
+            category_orders={
+                "x": MONTH_ORDER
+            },
         )
 
     fig.update_layout(
@@ -61,116 +64,6 @@ def SingleBarChart(df_singlebar, TimeInterval, Sampling_Factor, year):
         height = TOP_ROW_HEIGHT
     )
     return fig
-    
-    # Define time intervals mapping dictionary
-    interval_mapping = {
-        'Yearly': {
-            'resample': df_singlebar['Start_Time'].dt.year,
-            'xlabel': 'Year',
-            'xlabels': ['2019', '2020','2021', '2022']
-        },
-        'Monthly': {
-            'resample': df_singlebar['Start_Time'].dt.month,
-            'xlabel': 'Month',
-            'xlabels': ['Genuary', 'February', 'March', 'April','May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-        },
-        'Daily': {
-            'resample': df_singlebar['Start_Time'].dt.dayofweek,
-            'xlabel': 'Day of the Week',
-            'xlabels': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        },
-        'Hourly': {
-            'resample': df_singlebar['Start_Time'].dt.hour,
-            'xlabel': 'Hour',
-            #'xlabels': ['00:00', '01:00', '02:00', '03:00','04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00',
-            #            '11:00', '12:00', '01:00 PM', '02:00 PM', '03:00 PM','04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', 
-            #            '08:00 PM', '09:00 PM', '10:00 PM','11:00 PM', 
-            #x            ]
-
-        }
-    }
-    
-    # Validate TimeInterval
-    if TimeInterval not in interval_mapping:
-        raise ValueError("TimeInterval must be one of 'Yearly', 'Monthly', 'Daily', or 'Hourly'")
-    
-    # Get resampling details
-    interval_details = interval_mapping[TimeInterval]
-    
-    # Calculate counts and apply Sampling_Factor
-    counts = (interval_details['resample'].value_counts().sort_index()) * Sampling_Factor
-    
-    # Define x labels
-    x_labels = interval_details.get('xlabels', counts.index)
-    
-    # Create bar chart
-    fig = px.bar(
-        x = x_labels, 
-        y = counts.values,          
-        labels = {'x': interval_details['xlabel'], 'y': 'Number of Accidents'},
-        title = TITLE_TEMPORAL_DIST_BARCHART[TimeInterval],
-        height = TOP_ROW_HEIGHT
-    )
-    
-    return fig
-
-def SingleBarChartold(df_singlebar, TimeInterval, Sampling_Factor, year):
-
-    # Filter by year
-    df_singlebar = FilterByYear(df_singlebar, year)
-    
-    # Define time intervals mapping dictionary
-    interval_mapping = {
-        'Yearly': {
-            'resample': df_singlebar['Start_Time'].dt.year,
-            'xlabel': 'Year',
-            'xlabels': ['2019', '2020','2021', '2022']
-        },
-        'Monthly': {
-            'resample': df_singlebar['Start_Time'].dt.month,
-            'xlabel': 'Month',
-            'xlabels': ['Genuary', 'February', 'March', 'April','May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-        },
-        'Daily': {
-            'resample': df_singlebar['Start_Time'].dt.dayofweek,
-            'xlabel': 'Day of the Week',
-            'xlabels': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        },
-        'Hourly': {
-            'resample': df_singlebar['Start_Time'].dt.hour,
-            'xlabel': 'Hour',
-            #'xlabels': ['00:00', '01:00', '02:00', '03:00','04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00',
-            #            '11:00', '12:00', '01:00 PM', '02:00 PM', '03:00 PM','04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', 
-            #            '08:00 PM', '09:00 PM', '10:00 PM','11:00 PM', 
-            #x            ]
-
-        }
-    }
-    
-    # Validate TimeInterval
-    if TimeInterval not in interval_mapping:
-        raise ValueError("TimeInterval must be one of 'Yearly', 'Monthly', 'Daily', or 'Hourly'")
-    
-    # Get resampling details
-    interval_details = interval_mapping[TimeInterval]
-    
-    # Calculate counts and apply Sampling_Factor
-    counts = (interval_details['resample'].value_counts().sort_index()) * Sampling_Factor
-    
-    # Define x labels
-    x_labels = interval_details.get('xlabels', counts.index)
-    
-    # Create bar chart
-    fig = px.bar(
-        x = x_labels, 
-        y = counts.values,          
-        labels = {'x': interval_details['xlabel'], 'y': 'Number of Accidents'},
-        title = TITLE_TEMPORAL_DIST_BARCHART[TimeInterval],
-        height = TOP_ROW_HEIGHT
-    )
-    
-    return fig
-
 
 def MultiBarChart(df_multibar, TimeInterval, Sampling_Factor, year):
 
@@ -190,7 +83,7 @@ def MultiBarChart(df_multibar, TimeInterval, Sampling_Factor, year):
         y=values1.values * Sampling_Factor,
         name='Very Light',
         marker=dict(color = GRADE1COLOR),
-        textposition='auto'
+        textposition='auto',
     )
     trace2 = go.Bar(
         x=categories,
@@ -220,16 +113,16 @@ def MultiBarChart(df_multibar, TimeInterval, Sampling_Factor, year):
     # Update layout for better visualization
     fig.update_layout(
         title=TITLE_TEMPORAL_DIST_BARCHART[TimeInterval],
-        xaxis=dict(title='Categories'),
-        yaxis=dict(title='Values'),
+        xaxis=dict(title=TITLE_TEMPORAL_DIST_BARCHART[TimeInterval],),
+        yaxis=dict(title='Accidents'),
         barmode='group',  
         bargap=0.15,      
         bargroupgap=0.1,  
-        height=TOP_ROW_HEIGHT
+        height=TOP_ROW_HEIGHT,
     )
 
      # Update the layout for the legend
-    fig.update_layout(legend_title_text='Effect on traffic')
+    fig.update_layout(showlegend=False)
 
     return fig
        
@@ -303,8 +196,7 @@ def BestWorstAcc(df_BW_acc, df_BW_pop, time_interval, orderby, show_all, SampleR
 
     # Create the bar chart using Plotly
 
-    # Map the full state names to the DataFrame
-    data['State'] = data['State'].map(CODE_TO_NAME)
+
 
     fig = px.bar(
         data,
@@ -315,7 +207,6 @@ def BestWorstAcc(df_BW_acc, df_BW_pop, time_interval, orderby, show_all, SampleR
         height=BESTWORST_HEIGHT
     )
     return fig
-
 
 def TemperaturePIE(df_temp, year):
 
@@ -349,6 +240,8 @@ def TemperaturePIE(df_temp, year):
             title=TITLE_TEMPERATURE_PIECHART,
         )
     )
+    # Update the layout for the legend
+    fig.update_layout(legend_title_text='Effect on traffic')
     return fig
 
 def LocationScatterPlot(df_loc, year, ViewMode):
@@ -370,8 +263,13 @@ def LocationScatterPlot(df_loc, year, ViewMode):
             x= 'Start_Lng', 
             height=BOTTOM_ROW_HEIGHT,
             color = 'Severity',
-            color_discrete_map=color_discrete_map
+            color_discrete_map=color_discrete_map,
+            hover_name='State',
+            hover_data=['Start_Lat', 'Start_Lng', 'Severity'],
         )
+
+        # hide legend because it is the same of the other graphs
+        fig.update_layout(showlegend=False)
         return fig
 
     fig = px.scatter(
@@ -380,6 +278,8 @@ def LocationScatterPlot(df_loc, year, ViewMode):
         x= 'Start_Lng', 
         height=BOTTOM_ROW_HEIGHT,
         title=TITLE_ACCIDENT_LOC_SCATTER,
+        hover_name='State',
+        hover_data=['Start_Lat', 'Start_Lng', 'Severity'],
     )
 
     return fig
