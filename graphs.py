@@ -262,6 +262,7 @@ def LocationScatterPlot(df_loc, year, ViewMode):
             y= 'Start_Lat', 
             x= 'Start_Lng', 
             height=BOTTOM_ROW_HEIGHT,
+            title=TITLE_ACCIDENT_LOC_SCATTER,
             color = 'Severity',
             color_discrete_map=color_discrete_map,
             hover_name='State',
